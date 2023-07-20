@@ -1205,6 +1205,27 @@ trait DeltaSQLConfBase {
       .booleanConf
       .createWithDefault(true)
 
+  val ENABLE_DYNAMIC_LOG_RETENTION =
+    buildConf("dynamic.logRetentionDuration.enable")
+      .internal()
+      .doc(
+        """
+          |enable dynamic logRetentionDuration conf.
+          |""".stripMargin)
+      .booleanConf
+      .createWithDefault(true)
+
+  val DYNAMIC_LOG_RETENTION =
+    buildConf("dynamic.logRetentionDuration")
+      .internal()
+      .doc(
+        """
+          |needs to be provided as a calendar interval such as '2 weeks'. Months
+          |and years are not accepted. You may specify '365 days' for a year instead.
+          |""".stripMargin)
+      .stringConf
+      .createWithDefault("interval 7 days")
+
   val ICEBERG_MAX_COMMITS_TO_CONVERT = buildConf("iceberg.maxPendingCommits")
     .doc("""
         |The maximum number of pending Delta commits to convert to Iceberg incrementally.

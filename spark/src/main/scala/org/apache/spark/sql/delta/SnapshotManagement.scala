@@ -192,7 +192,8 @@ trait SnapshotManagement { self: DeltaLog =>
         throw DeltaErrors.logFileNotFoundException(
           deltaFile(logPath, checkpointVersion + 1),
           lastDeltaVersion,
-          unsafeVolatileMetadata) // metadata is best-effort only
+          unsafeVolatileMetadata,
+          logRetention(unsafeVolatileMetadata)) // metadata is best-effort only
       }
       val deltaVersions = selectedDeltas.flatMap {
         case DeltaFile(_, v) => Seq(v)

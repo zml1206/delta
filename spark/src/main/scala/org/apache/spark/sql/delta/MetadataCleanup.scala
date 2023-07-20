@@ -37,7 +37,7 @@ trait MetadataCleanup extends DeltaLogging {
    * beyond this duration until the next calendar day to avoid constantly creating checkpoints.
    */
   def deltaRetentionMillis(metadata: Metadata): Long = {
-    val interval = DeltaConfigs.LOG_RETENTION.fromMetaData(metadata)
+    val interval = logRetention(metadata)
     DeltaConfigs.getMilliSeconds(interval)
   }
 

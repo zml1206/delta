@@ -46,6 +46,7 @@ import org.apache.spark.sql.connector.catalog.CatalogV2Implicits._
 import org.apache.spark.sql.connector.catalog.Identifier
 import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.types.{DataType, StructField, StructType}
+import org.apache.spark.unsafe.types.CalendarInterval
 
 
 trait DocsPath {
@@ -743,8 +744,8 @@ trait DeltaErrorsBase
   def logFileNotFoundException(
       path: Path,
       version: Long,
-      metadata: Metadata): Throwable = {
-    val logRetention = DeltaConfigs.LOG_RETENTION.fromMetaData(metadata)
+      metadata: Metadata,
+      logRetention: CalendarInterval): Throwable = {
     val checkpointRetention = DeltaConfigs.CHECKPOINT_RETENTION_DURATION.fromMetaData(metadata)
     new DeltaFileNotFoundException(
       errorClass = "DELTA_TRUNCATED_TRANSACTION_LOG",

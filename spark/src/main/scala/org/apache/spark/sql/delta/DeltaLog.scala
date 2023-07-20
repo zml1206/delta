@@ -54,6 +54,7 @@ import org.apache.spark.sql.internal.SQLConf
 import org.apache.spark.sql.sources.{BaseRelation, InsertableRelation}
 import org.apache.spark.sql.types.{StructField, StructType}
 import org.apache.spark.sql.util.CaseInsensitiveStringMap
+import org.apache.spark.unsafe.types.CalendarInterval
 import org.apache.spark.util._
 
 /**
@@ -136,6 +137,17 @@ class DeltaLog private(
    */
   def maxSnapshotLineageLength: Int =
     spark.sessionState.conf.getConf(DeltaSQLConf.DELTA_MAX_SNAPSHOT_LINEAGE_LENGTH)
+
+  def enableDynamicLogRetention: Boolean =
+    spark.sessionState.conf.getConf(DeltaSQLConf.ENABLE_DYNAMIC_LOG_RETENTION)
+
+  def logRetention(metadata: Metadata): CalendarInterval =
+    if (enableDynamicLogRetention) {
+      val dynamicLogRetention = spark.sessionState.conf.getConf(DeltaSQLConf.DYNAMIC_LOG_RETENTION)
+      DeltaConfigs.parseCalendarInterval(dynamicLogRetention)
+    } else {
+      DeltaConfigs.LOG_RETENTION.fromMetaData(metadata)
+    }
 
   /** The unique identifier for this table. */
   def tableId: String = unsafeVolatileMetadata.id // safe because table id never changes
