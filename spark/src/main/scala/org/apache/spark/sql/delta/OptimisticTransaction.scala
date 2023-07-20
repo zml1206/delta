@@ -32,7 +32,7 @@ import org.apache.spark.sql.delta.actions._
 import org.apache.spark.sql.delta.commands.DeletionVectorUtils
 import org.apache.spark.sql.delta.commands.cdc.CDCReader
 import org.apache.spark.sql.delta.files._
-import org.apache.spark.sql.delta.hooks.{CheckpointHook, DoAutoCompaction, GenerateSymlinkManifest, IcebergConverterHook, PostCommitHook}
+import org.apache.spark.sql.delta.hooks.{CheckpointHook, DoAutoCompaction, DoAutoVacuum, GenerateSymlinkManifest, IcebergConverterHook, PostCommitHook}
 import org.apache.spark.sql.delta.implicits.addFileEncoder
 import org.apache.spark.sql.delta.metering.DeltaLogging
 import org.apache.spark.sql.delta.schema.{SchemaMergingUtils, SchemaUtils}
@@ -1056,6 +1056,12 @@ trait OptimisticTransactionImpl extends TransactionalWrite
             DeltaConfigs.AUTO_COMPACT.fromMetaData(metadata)}
       if (!op.isInstanceOf[DeltaOperations.Optimize] && autoCompactEnabled && hasFileActions) {
         registerPostCommitHook(DoAutoCompaction)
+      }
+
+      lazy val autoVacuumEnabled = spark.sessionState.conf.getConf(DeltaSQLConf.AUTO_VACUUM_ENABLED)
+
+      if (!op.isInstanceOf[DeltaOperations.Optimize] && autoVacuumEnabled && hasFileActions) {
+        registerPostCommitHook(DoAutoVacuum)
       }
 
       commitAttemptStartTime = clock.getTimeMillis()
