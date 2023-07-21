@@ -1143,16 +1143,16 @@ lazy val releaseSettings = Seq(
   sonatypeProfileName := "io.delta", // sonatype account domain name prefix / group ID
   credentials += Credentials(
     "Sonatype Nexus Repository Manager",
-    "oss.sonatype.org",
+    "app.mayidata.com/nexus",
     sys.env.getOrElse("SONATYPE_USERNAME", ""),
     sys.env.getOrElse("SONATYPE_PASSWORD", "")
   ),
   publishTo := {
-    val nexus = "https://oss.sonatype.org/"
+    val nexus = "https://app.mayidata.com/nexus/"
     if (isSnapshot.value) {
-      Some("snapshots" at nexus + "content/repositories/snapshots")
+      Some("snapshots" at nexus + "repository/maven-snapshots")
     } else {
-      Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+      Some("releases"  at nexus + "repository/maven-releases")
     }
   },
   licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0")),
@@ -1214,7 +1214,7 @@ lazy val releaseSettings = Seq(
 // Looks like some of release settings should be set for the root project as well.
 publishArtifact := false  // Don't release the root project
 publish / skip := true
-publishTo := Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
+publishTo := Some("snapshots" at "https://app.mayidata.com/nexus/repository/maven-snapshots")
 releaseCrossBuild := false  // Don't use sbt-release's cross facility
 releaseProcess := Seq[ReleaseStep](
   checkSnapshotDependencies,
